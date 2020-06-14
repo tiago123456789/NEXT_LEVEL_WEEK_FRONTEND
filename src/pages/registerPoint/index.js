@@ -5,6 +5,7 @@ import InputMask from "react-input-mask";
 import ItenService from "./../../services/ItemService";
 import IbgeService from "./../../services/IbgeService";
 import PointService from "./../../services/PointService";
+import Dropzone from "./../../components/dropzone";
 import "./style.css";
 import logo from "./../../assets/logo.svg";
 
@@ -22,6 +23,8 @@ export default () => {
     const [selectedItems, setSelectedItem] = useState([]);
     const [selectedUf, setSelectedUf] = useState("");
     const [selectedCity, setSelectedCity] = useState("");
+    const [selectedFile, setSelectedFile] = useState("");
+
 
     const [formData, setFormData] = useState({
         name: "",
@@ -31,20 +34,23 @@ export default () => {
 
     const handlerSubmit = (event) => {
         event.preventDefault();
-        pointService.create({
-            name: formData.name,
-            email: formData.email,
-            whatsapp: formData.whatsapp,
-            uf: selectedUf,
-            city: selectedCity,
-            itens: selectedItems,
-            latitude: selectedPosition[0],
-            longitude: selectedPosition[1],
-            path_image: "teste.png"
-        }).then(() => {
-            alert("Save success!!!")
-            history.push("/");
+        const form = new FormData();
+        form.append("name", formData.name);
+        form.append("email", formData.email);
+        form.append("whatsapp", formData.whatsapp);
+        form.append("uf", selectedUf);
+        form.append("city", selectedCity);
+        selectedItems.forEach((item, indice) => {
+            form.append(`itens[${indice}]`, item);
         });
+        form.append("latitude", selectedPosition[0]);
+        form.append("longitude", selectedPosition[1]);
+        form.append("image", selectedFile);
+        pointService.create(form)
+            .then(() => {
+                alert("Save success!!!")
+                history.push("/");
+            });
     }
 
     const changeCity = (event) => {
@@ -114,6 +120,11 @@ export default () => {
                 <h1>Register point collect</h1>
                 <fieldset>
                     <legend><h2>Datas</h2></legend>
+
+                    <div className="field">
+                        <Dropzone handlerFile={(acceptFiles) => setSelectedFile(acceptFiles[0])} />
+                    </div>
+
                     <div className="field">
                         <label htmlFor="name">Name:</label>
                         <input type="text" name="name" id="name"

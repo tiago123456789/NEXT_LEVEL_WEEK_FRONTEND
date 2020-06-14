@@ -42,7 +42,6 @@ export default () => {
         pointService
             .findAllByUfAndCity(querystringParams.uf, querystringParams.city)
             .then(points => {
-                console.log(points);
                 setPoints(points)
             });
 
@@ -64,7 +63,7 @@ export default () => {
                     { points.map((point, indice) => (
                         <Marker  key={indice} position={[point.latitude, point.longitude]} >
                             <Popup>
-                                <img src="http://localhost:3000/oleo.svg"
+                                <img src={point.path_image}
                                  alt="enterprise logo"
                                  style={{ width: "150px", height: "150px" }}
                                  />
@@ -72,7 +71,6 @@ export default () => {
                                     <li>Point collect: {point.name}</li>
                                     <li>Email: {point.email}</li>
                                     <li>Whatsapp: {point.whatsapp}</li>
-
                                 </ul>
                             </Popup>
                         </Marker>
